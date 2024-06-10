@@ -20,7 +20,6 @@ class Pharmacy:
         
         # Apply outdating cost for old items that perish
         self.balance -= self.outdating_cost * self.inventory['old']
-
         # 'old' items perish at the end of the day
         self.inventory['old'] = 0
         # 'new' items become 'old' at the end of the day
