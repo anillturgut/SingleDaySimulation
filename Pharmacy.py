@@ -8,6 +8,7 @@ class Pharmacy:
         self.cost_per_unit = unit_cost
         self.holding_cost = holding_cost
         self.outdating_cost = outdating_cost
+        self.lost_sales_counter = 0
     
     def replenish(self, amount):
         self.inventory['new'] += amount
@@ -39,6 +40,7 @@ class Pharmacy:
             # Implicit lost sales cost (not explicit) = - (revenue - cost)
             lost_sales_cost = -(self.revenue_per_unit - self.cost_per_unit)
             self.balance += lost_sales_cost
+            self.lost_sales_counter += 1
             print(self.get_name() + " has no inventory to fulfill demand")
             return False
            

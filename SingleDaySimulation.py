@@ -66,31 +66,33 @@ def calculate_fulfillment_metric(I1, I2, V1, V2, w1 = 1, w2 = 1):
 def fulfillIncomingDemand(chosen_pharmacy, other_pharmacy):
     if not chosen_pharmacy.fulfill_demand():
         if not other_pharmacy.fulfill_demand():
-            return None
+            print("Lost sales for both pharmacies")
+            return False
 
-def simulate_day(arrival_timestamps, initial_balance, replenish_amount):
+def simulate_day(arrival_timestamps):
     invalid_arrivals = []
 
-    pharmacy1 = Pharmacy(pharmacy_name = "1", initial_balance = initial_balance, 
-                         initial_new_inventory=10, initial_old_inventory=10)
-    pharmacy2 = Pharmacy(pharmacy_name = "2", initial_balance = initial_balance2,
-                         initial_new_inventory=20, initial_old_inventory=10)
-    
-    pharmacy1.replenish(replenish_amount)
-    pharmacy2.replenish(replenish_amount2)
-    
+    pharmacy1 = Pharmacy("1", initial_balance=initial_pharmacy1_balance, initial_new_inventory=initial_pharmacy1_new_inventory,
+                         initial_old_inventory= initial_pharmacy1_old_inventory)
+    pharmacy2 = Pharmacy("2", initial_balance=initial_pharmacy2_balance, initial_new_inventory=initial_pharmacy2_new_inventory,
+                         initial_old_inventory= initial_pharmacy2_old_inventory)
+
+    pharmacy1.replenish(replenish_amount_pharmacy1)
+    pharmacy2.replenish(replenish_amount_pharmacy2)
+
     print("Replenishment is done, Inventory levels at the beginning of day:")
     print(f"Pharmacy 1: {pharmacy1}")
     print(f"Pharmacy 2: {pharmacy2}")
-    
+    print("- - - - - - - - -")
     for timestamp in arrival_timestamps:
-        if(isValidArrival(timestamp)):
+        if (isValidArrival(timestamp)):
             I1 = pharmacy1.get_inventory_level()
             I2 = pharmacy2.get_inventory_level()
             V1 = pharmacy1.get_shelf_life_value()
             V2 = pharmacy2.get_shelf_life_value()
 
             fulfillment_metric = calculate_fulfillment_metric(I1, I2, V1, V2)
+            print("Fulfillment Metric:", str(round(fulfillment_metric, 3)))
 
             if fulfillment_metric > 0:
                 chosen_pharmacy = pharmacy1
@@ -101,40 +103,51 @@ def simulate_day(arrival_timestamps, initial_balance, replenish_amount):
                 other_pharmacy = pharmacy1 if chosen_pharmacy == pharmacy2 else pharmacy2
                 fulfillIncomingDemand(chosen_pharmacy, other_pharmacy)
             else:
+                print("Pharmacy is chosen randomly")
                 chosen_pharmacy = random.choice([pharmacy1, pharmacy2])
                 other_pharmacy = pharmacy1 if chosen_pharmacy == pharmacy2 else pharmacy2
                 fulfillIncomingDemand(chosen_pharmacy, other_pharmacy)
-                
+
+
             print(f"At timestamp {timestamp}, chosen pharmacy: {chosen_pharmacy.get_name()}")
-#             print(f"Pharmacy 1: {pharmacy1}")
-#             print(f"Pharmacy 2: {pharmacy2}")
+            print(f"Pharmacy 1: {pharmacy1}")
+            print(f"Pharmacy 2: {pharmacy2}")
+            print("- - - - - - - - -")
         else:
             invalid_arrivals.append(timestamp)
 
-        
+
     # Process end of day changes
     pharmacy1.process_day_end()
     pharmacy2.process_day_end()
-    
+
     print("End of day:")
     print(f"Pharmacy 1: {pharmacy1}")
     print(f"Pharmacy 2: {pharmacy2}")
-    print(f"# of unresponsive customer: {len(invalid_arrivals)}")
+    print(f"# of invalid incomings(time restriction) : {len(invalid_arrivals)}")
+    print(f"# of unmet demand by Pharmacy 1 : {pharmacy1.lost_sales_counter}")
+    print(f"# of unmet demand by Pharmacy 2 : {pharmacy2.lost_sales_counter}")
     print("- - - - - - - - - - - - -")
     print(f"Winner: {get_winner(pharmacy1, pharmacy2)}")
 
 
 if __name__ == "__main__":
 
-    initial_balance = 100
-    initial_balance2 = 100
+    initial_pharmacy1_balance = 100
+    initial_pharmacy2_balance = 100
 
-    replenish_amount = 5
-    replenish_amount2 = 5
+    initial_pharmacy1_new_inventory = 20
+    initial_pharmacy2_new_inventory = 10
+
+    initial_pharmacy1_old_inventory = 10
+    initial_pharmacy2_old_inventory = 10
+
+    replenish_amount_pharmacy1 = 5
+    replenish_amount_pharmacy2 = 5
 
     opening_time = time(8, 0, 0)
     closing_time = time(18, 0, 0)
 
 
 
-    simulate_day(arrival_timestamps, initial_balance, replenish_amount)
+    simulate_day(arrival_timestamps)
