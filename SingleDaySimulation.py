@@ -28,8 +28,6 @@ def generateIncomingDemandTimestamps(arrival_times):
     
     return arrival_timestamps
 
-
-
 arrival_timestamps = generateIncomingDemandTimestamps(arrival_times)
 
 def convert_to_time(timestamp_str):
@@ -66,10 +64,9 @@ def calculate_fulfillment_metric(I1, I2, V1, V2, w1 = 1, w2 = 1):
 
 
 def fulfillIncomingDemand(chosen_pharmacy, other_pharmacy):
-    if chosen_pharmacy.fulfill_demand():
-        return None
-    else:
-        other_pharmacy.fulfill_demand()
+    if not chosen_pharmacy.fulfill_demand():
+        if not other_pharmacy.fulfill_demand():
+            return None
 
 def simulate_day(arrival_timestamps, initial_balance, replenish_amount):
     invalid_arrivals = []
