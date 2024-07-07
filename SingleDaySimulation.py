@@ -56,6 +56,7 @@ def get_winner(pharmacy1, pharmacy2):
         return "tie"
     
 def calculate_fulfillment_metric(I1, I2, V1, V2, w1 = 1, w2 = 1):
+
     if max(I1, I2) == 0:
         normalized_inventory_difference = 0
     else:
